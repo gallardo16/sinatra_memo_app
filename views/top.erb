@@ -1,0 +1,15 @@
+<h1>MEMO APP</h1>
+<div class="bg-light border border-info">
+  <ul>
+    <% Dir.glob("./memos/*").each do |file| %>
+    <% @memo = JSON.load("#{File.read(file)}") %>
+    <li class="my-2">
+      <a class="title" href="../memos/<%= @memo["id"] %>"><%= @memo["title"] %></a>
+    </li>
+    <% end %>
+  </ul>
+</div>
+<form action="/new" method="get">
+  <button class="btn btn-outline-dark m-2" type="submit">追加</button>
+</form>
+
