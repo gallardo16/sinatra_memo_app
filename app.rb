@@ -32,11 +32,13 @@ end
 get '/memos/:id' do
   @file = File.open("./memos/#{params[:id]}.json", 'r')
   erb :memo
+  @file.close
 end
 
 get '/memos/:id/edit' do
   @file = File.open("./memos/#{params[:id]}.json", 'r')
   erb :edit
+  @file.close
 end
 
 patch '/memos/:id' do
