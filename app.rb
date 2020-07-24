@@ -30,15 +30,15 @@ post '/new' do
 end
 
 get '/memos/:id' do
-  @file = File.open("./memos/#{params[:id]}.json", 'r')
+  @file = File.read("./memos/#{params[:id]}.json")
+  @memo = JSON.load(@file)
   erb :memo
-  @file.close
 end
 
 get '/memos/:id/edit' do
-  @file = File.open("./memos/#{params[:id]}.json", 'r')
+  @file = File.read("./memos/#{params[:id]}.json")
+  @memo = JSON.load(@file)
   erb :edit
-  @file.close
 end
 
 patch '/memos/:id' do
