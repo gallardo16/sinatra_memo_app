@@ -1,11 +1,10 @@
 <h1>メモ一覧</h1>
 <div class="bg-light border border-info">
   <ul>
-    <% Dir.glob("./memos/*").each do |file| %>
-    <% @memo = JSON.load("#{File.read(file)}") %>
-    <li class="my-2">
-      <a class="title" href="../memos/<%= @memo["id"] %>"><%= @memo["title"] %></a>
-    </li>
+    <% @results.each do |result| %>
+      <li class="my-2">
+        <a class="title" href="../memos/<%= result["id"] %>"><%= result["title"] %></a>
+      </li>
     <% end %>
   </ul>
 </div>
