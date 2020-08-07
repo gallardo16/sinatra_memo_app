@@ -1,6 +1,6 @@
 <h1>メモ編集</h1>
 <% @results .each do |result| %>
-<form  action="/memos/<%= result["id"] %>" method="post">
+<form action="/memos/<%= result["id"] %>" method="post">
   <div class="bg-light border border-info p-2">
     <div class="form-group">
       <label for="title">タイトル</label>
