@@ -3,17 +3,36 @@ require 'sinatra/reloader'
 require 'pg'
 
 class Memo
-  attr_reader :id, :title, :content
+  @@conn = PG.connect(host: ENV["HOST"], user: ENV["DBUSER"], dbname: ENV["DBNAME"], password: ENV["PASSWORD"])
+
   def initialize(title, content)
-    @id = id
     @title = title
     @content = content
+  end
+
+  def self.find_all
+    @@conn.exec('SELECT * FROM memos;')
+  end
+
+  def self.find_by_id(id)
+    @@conn.exec("SELECT * FROM memos where id = '#{id}';")
+  end
+
+  def create
+    @@conn.exec("INSERT INTO memos (title, content) VALUES ('#{@title}', '#{@content}')")
+  end
+
+  def update(id)
+    @@conn.exec("UPDATE memos SET title='#{@title}', content='#{@content}' WHERE id=#{id};")
+  end
+
+  def delete(id)
+    @@conn.exec("DELETE FROM memos WHERE id = #{id};")
   end
 end
 
 get '/' do
-  conn = PG.connect(host: 'localhost', user: 'postgres', dbname: 'postgres')
-  @results = conn.exec('SELECT * FROM memos;')
+  @results = Memo.find_all
   erb :top
 end
 
@@ -23,31 +42,28 @@ end
 
 post '/new' do
   memo = Memo.new(params[:title], params[:content])
-  conn = PG.connect(host: 'localhost', user: 'postgres', dbname: 'postgres')
-  conn.exec("INSERT INTO memos (title, content) VALUES ('#{memo.title}', '#{memo.content}')")
+  memo.create
   redirect '/'
 end
 
 get '/memos/:id' do
-  conn = PG.connect(host: 'localhost', user: 'postgres', dbname: 'postgres')
-  @results = conn.exec("SELECT * FROM memos where id = #{params[:id]};")
+  @results = Memo.find_by_id(params[:id])
   erb :memo
 end
 
 get '/memos/:id/edit' do
-  conn = PG.connect(host: 'localhost', user: 'postgres', dbname: 'postgres')
-  @results = conn.exec("SELECT * FROM memos where id = #{params[:id]};")
+  @results = Memo.find_by_id(params[:id])
   erb :edit
 end
 
 patch '/memos/:id' do
-  conn = PG.connect(host: 'localhost', user: 'postgres', dbname: 'postgres')
-  conn.exec("UPDATE memos SET title='#{params[:title]}', content='#{params[:content]}' WHERE id=#{params[:id]};")
+  memo = Memo.new(params[:title], params[:content])
+  memo.update(params[:id])
   redirect '/'
 end
 
 delete '/memos/:id' do
-  conn = PG.connect(host: 'localhost', user: 'postgres', dbname: 'postgres')
-  conn.exec("DELETE FROM memos WHERE id = #{params[:id]};")
+  memo = Memo.new(params[:title], params[:content] )
+  memo.delete(params[:id])
   redirect '/'
 end
