@@ -5,34 +5,40 @@ require 'pg'
 class Memo
   @@conn = PG.connect(host: ENV["HOST"], user: ENV["DBUSER"], dbname: ENV["DBNAME"], password: ENV["PASSWORD"])
 
-  def initialize(title, content)
+  attr_reader :title, :content, :id
+  def initialize(title, content, id)
     @title = title
     @content = content
+    @id = id
   end
 
   def self.find_all
-    @@conn.exec('SELECT * FROM memos;')
+    results = @@conn.exec('SELECT * FROM memos;')
+    results.map do |result|
+      Memo.new(result['title'], result['content'], result['id'])
+    end
   end
 
   def self.find_by_id(id)
-    @@conn.exec("SELECT * FROM memos where id = '#{id}';")
+    result = @@conn.exec("SELECT * FROM memos where id='#{id}';")
+    Memo.new(result[0]['title'], result[0]['content'], result[0]['id'])
   end
 
   def create
     @@conn.exec("INSERT INTO memos (title, content) VALUES ('#{@title}', '#{@content}')")
   end
 
-  def update(id)
-    @@conn.exec("UPDATE memos SET title='#{@title}', content='#{@content}' WHERE id=#{id};")
+  def update(title, content)
+    @@conn.exec("UPDATE memos SET title='#{title}', content='#{content}' WHERE id='#{id}';")
   end
 
-  def delete(id)
-    @@conn.exec("DELETE FROM memos WHERE id = #{id};")
+  def delete
+    @@conn.exec("DELETE FROM memos WHERE id='#{id}';")
   end
 end
 
 get '/' do
-  @results = Memo.find_all
+  @memos = Memo.find_all
   erb :top
 end
 
@@ -41,29 +47,29 @@ get '/new' do
 end
 
 post '/new' do
-  memo = Memo.new(params[:title], params[:content])
+  memo = Memo.new(params[:title], params[:content], params[:id])
   memo.create
   redirect '/'
 end
 
 get '/memos/:id' do
-  @results = Memo.find_by_id(params[:id])
+  @memo = Memo.find_by_id(params[:id])
   erb :memo
 end
 
 get '/memos/:id/edit' do
-  @results = Memo.find_by_id(params[:id])
+  @memo = Memo.find_by_id(params[:id])
   erb :edit
 end
 
 patch '/memos/:id' do
-  memo = Memo.new(params[:title], params[:content])
-  memo.update(params[:id])
+  memo = Memo.find_by_id(params[:id])
+  memo.update(params[:title], params[:content])
   redirect '/'
 end
 
 delete '/memos/:id' do
-  memo = Memo.new(params[:title], params[:content] )
-  memo.delete(params[:id])
+  memo = Memo.find_by_id(params[:id])
+  memo.delete
   redirect '/'
 end
