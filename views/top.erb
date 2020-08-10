@@ -1,9 +1,9 @@
 <h1>メモ一覧</h1>
 <div class="bg-light border border-info">
   <ul>
-    <% @results.each do |result| %>
+    <% @memos.each do |memo| %>
       <li class="my-2">
-        <a class="title" href="../memos/<%= result["id"] %>"><%= result["title"] %></a>
+        <a class="title" href="../memos/<%= memo.id %>"><%= memo.title %></a>
       </li>
     <% end %>
   </ul>
@@ -11,4 +11,3 @@
 <form action="/new" method="get">
   <button class="btn btn-outline-dark m-2" type="submit">追加</button>
 </form>
-
