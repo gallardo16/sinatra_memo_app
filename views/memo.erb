@@ -1,16 +1,14 @@
 <h1>メモ詳細</h1>
-<% @results.each do |result| %>
   <div class="bg-light border border-info p-2">
     <p>・タイトル</p>
-    <p class="bg-white border border-info rounded"><%= result["title"] %></p>
+    <p class="bg-white border border-info rounded"><%= @memo.title %></p>
     <p>・内容</p>
-    <p class="bg-white border border-info rounded pb-5"><%= result["content"] %></p>
+    <p class="bg-white border border-info rounded pb-5"><%= @memo.content %></p>
   </div>
-  <form action="/memos/<%= result["id"] %>/edit" method="get">
+  <form action="/memos/<%= @memo.id %>/edit" method="get">
   <button class="btn btn-outline-dark m-2" type="submit">変更</button>
   </form>
-  <form action="/memos/<%= result["id"] %>" method="post">
+  <form action="/memos/<%= @memo.id %>" method="post">
   <input type="hidden" name="_method" value="delete">
   <button class="btn btn-outline-dark m-2" type="submit">削除</button>
   </form>
-<% end %>
