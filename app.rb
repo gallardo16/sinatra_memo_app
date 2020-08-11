@@ -20,20 +20,26 @@ class Memo
   end
 
   def self.find_by_id(id)
-    result = @@conn.exec("SELECT * FROM memos where id='#{id}';")
-    Memo.new(result[0]['title'], result[0]['content'], result[0]['id'])
+    sql = 'SELECT * FROM memos where id=$1;'
+    result = @@conn.exec(sql, [id])
+    if (record = result[0])
+      Memo.new(record['title'], record['content'], record['id'])
+    end
   end
 
   def create
-    @@conn.exec("INSERT INTO memos (title, content) VALUES ('#{@title}', '#{@content}')")
+    sql = 'INSERT INTO memos (title, content) VALUES ($1, $2);'
+    @@conn.exec(sql, [title, content])
   end
 
   def update(title, content)
-    @@conn.exec("UPDATE memos SET title='#{title}', content='#{content}' WHERE id='#{id}';")
+    sql = 'UPDATE memos SET title=$1, content=$2 WHERE id=$3;'
+    @@conn.exec(sql, [title, content, id])
   end
 
   def delete
-    @@conn.exec("DELETE FROM memos WHERE id='#{id}';")
+    sql = 'DELETE FROM memos WHERE id=$1;'
+    @@conn.exec(sql, [id])
   end
 end
 
